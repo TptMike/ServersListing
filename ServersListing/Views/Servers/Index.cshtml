@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="app">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Hostname</th>
+            <th>IP</th>
+            <th>Services</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr serverinfo v-for="server in servers">
+            <td>{{ server.Id }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<script>
+const app = {
+  data() {
+    return {
+      message: 'You loaded this page on ' + new Date().toLocaleString()
+    }
+    },
+    mounted() {
+        axios.get('/api/servers/all')
+            .then(response => { this.servers = respones.data })
+    }
+}
+
+    Vue.createApp(app)
+
+    app.component('serverinfo', {
+        props: ['servers']
+    })
+
+    app.mount('#app')
+</script>
