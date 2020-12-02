@@ -9,6 +9,15 @@
     {
       "library": "vue@3.0.2",
       "destination": "wwwroot/lib/vue/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "axios@0.21.0",
+      "destination": "wwwroot/lib/axios/",
+      "files": [
+        "dist/axios.js",
+        "dist/axios.min.js"
+      ]
     }
   ]
 }

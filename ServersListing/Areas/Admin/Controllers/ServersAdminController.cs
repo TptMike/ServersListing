@@ -9,10 +9,10 @@ using ServersListing.ViewModels;
 
 namespace ServersListing.Areas.Admin.Controllers
 {
-    public class ServersController : Controller
+    public class ServersAdminController : Controller
     {
         private ApplicationDbContext _db;
-        public ServersController(ApplicationDbContext ctx)
+        public ServersAdminController(ApplicationDbContext ctx)
         {
             _db = ctx;
         }
