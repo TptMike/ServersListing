@@ -28,7 +28,7 @@ namespace ServersListing.DAL
                    JOIN ServerType st ON si.ServerTypeId = st.Id;
                  * 
                  */
-                var results = (from serverinfo in _db.ServerInfo
+                var servers = (from serverinfo in _db.ServerInfo
                                join stype in _db.ServerType on serverinfo.ServerTypeId equals stype.Id
                                select new ServerInfoModel { 
                                    Id = serverinfo.Id,
@@ -38,7 +38,48 @@ namespace ServersListing.DAL
                                    Description = serverinfo.Description
                                }).ToList();
 
-                return results;
+
+                /*
+                 * 
+                 * SELECT ss.ServiceName, ss.Label, si.ServerHostName FROM ServerInfo si
+                   JOIN ServerServiceInfo ssi ON ssi.ServerInfoId = si.Id
+                   JOIN ServerService ss ON ssi.ServerServiceId = ss.Id
+                   WHERE si.Id = 2;
+                 * 
+                 */
+
+                var serverServices = (from si in _db.ServerInfo
+                               join ssi in _db.ServerServiceinfo on si.Id equals ssi.ServerInfoId
+                               join ss in _db.ServerService on ssi.ServerServiceId equals ss.Id
+                               select new ServerServiceInfoDTO
+                               {
+                                   Id = ssi.ServerServiceId,
+                                   ServiceName = ss.ServiceName,
+                                   Label = ss.Label,
+                                   ServerInfoId = si.Id
+                               }).ToList();
+
+                foreach (ServerInfoModel server in servers)
+                {
+                    // Search list of DTOs and filter down to list of services
+                    var filteredServices = serverServices.Where(ss => ss.ServerInfoId == server.Id).ToList();
+                    if(server.Services == null)
+                    {
+                        server.Services = new List<ServerService>();
+                    }
+                    foreach (var filteredService in filteredServices)
+                    {
+                        server.Services.Add(new ServerService
+                        {
+                            Id = filteredService.Id,
+                            ServiceName = filteredService.ServiceName,
+                            Label = filteredService.Label
+                        });
+                    }
+                }
+
+
+                return servers;
             }
         }
     }

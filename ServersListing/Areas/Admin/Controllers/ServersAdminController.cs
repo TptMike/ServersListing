@@ -20,13 +20,5 @@ namespace ServersListing.Areas.Admin.Controllers
         {
             return View();
         }
-
-        [HttpGet]
-        [Route("api/servers/all")]
-        public IActionResult GetAll()
-        {
-            ServerInfoDAL _dal = new ServerInfoDAL(_db);
-            return Ok(_dal.GetAll());
-        }
     }
 }

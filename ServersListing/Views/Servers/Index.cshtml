@@ -5,28 +5,29 @@
 }
 
 <div id="app">
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Type</th>
-            <th>Hostname</th>
-            <th>IP</th>
-            <th>Services</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr v-for="server in servers">
-            <td>{{ server.id }}</td>
-            <td>{{ server.serverTypeName }}</td>
-            <td>{{ server.serverHostName }}</td>
-            <td>{{ server.ipAddress }}</td>
-            <td>###</td>
-            <td>{{ server.description }}</td>
-        </tr>
-    </tbody>
-</table>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th v-on:click="sort('id')">ID</th>
+                <th v-on:click="sort('serverHostName')">Hostname</th>
+                <th v-on:click="sort('serverTypeName')">Type</th>
+                <th v-on:click="sort('ipAddress')">IP</th>
+                <th>Services</th>
+                <th v-on:click="sort('description')">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="server in sortedServers">
+                <td>{{ server.id }}</td>
+                <td>{{ server.serverHostName }}</td>
+                <td>{{ server.serverTypeName }}</td>
+                <td>{{ server.ipAddress }}</td>
+                <td><span style="padding-left:2px; margin-left:2px;" v-for="service in server.services" class="badge badge-info">{{ service.label }}</span></td>
+                <td>{{ server.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+    debug: sort={{currentSort}}, dir={{currentSortDir}}
 </div>
 
 <script type="text/javascript">
@@ -34,12 +35,34 @@
         el: '#app',
         data() {
             return {
-                servers: null
+                servers: [],
+                currentSort: 'id',
+                currentSortDir: 'asc'
             }
         },
         created() {
             axios.get('/api/servers/all')
                 .then(response => { this.servers = response.data })
+        },
+        methods: {
+            sort(s) {
+                //if s == current sort, reverse
+                if (s === this.currentSort) {
+                    this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+                }
+                this.currentSort = s;
+            }
+        },
+        computed: {
+            sortedServers:function() {
+                return this.servers.sort((a, b) => {
+                    let modifier = 1;
+                    if (this.currentSortDir === 'desc') modifier = -1;
+                    if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                    if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+                    return 0;
+                });
+            }
         }
     });
     app.mount('#app');

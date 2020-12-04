@@ -12,5 +12,6 @@ namespace ServersListing.Models
         public string ServerHostName { get; set; }
         public string IPAddress { get; set; }
         public string Description { get; set; }
+        public List<ServerService> Services { get; set; }
     }
 }
